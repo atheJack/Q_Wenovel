@@ -1,4 +1,4 @@
-package com.example.qs_noval;
+package com.example.qs_novel;
 
 import org.junit.Test;
 

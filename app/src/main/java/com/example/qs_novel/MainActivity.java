@@ -1,9 +1,10 @@
-package com.example.qs_noval;
+package com.example.qs_novel;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
-import android.text.Layout;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -12,6 +13,8 @@ import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.example.qs_novel.R;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -24,10 +27,7 @@ import java.util.ArrayList;
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
-import io.reactivex.Scheduler;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Cancellable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import okhttp3.OkHttpClient;
@@ -35,19 +35,22 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
-    private Button get_noval_resource;
-    private TextView noval_content;
+    private Button get_novel_resource;
+    private TextView novel_content;
     private Button last_chapter;
     private Button next_chapter;
     private String websites;
+    //private ProgressBar mProgressBar;
     private int count=0;
     private boolean flag=false;
-    private TextView noval_chapter;
+    private TextView novel_chapter;
     private String chapter_next_address;  //记录下一章的网址
     private String chapter_prev_address; //记录上一章的网址
     private ArrayList<String> catalog;
     private Spinner select_chapter;
     private ArrayAdapter<String> adapter;
+    private ProgressDialog mProgressDialog;
+    private static final String TAG = "MainActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,16 +58,33 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
         catalog=new ArrayList<String>();
         select_chapter=(Spinner)findViewById(R.id.header_btn2);
-        get_noval_resource=(Button)findViewById(R.id.header_btn1);
-        noval_content=(TextView)findViewById(R.id.noval_content);
+        get_novel_resource=(Button)findViewById(R.id.header_btn1);
+        novel_content=(TextView)findViewById(R.id.novel_content);
         last_chapter=(Button)findViewById(R.id.tail_btn1);
         next_chapter=(Button)findViewById(R.id.tail_btn2);
-        noval_chapter=(TextView)findViewById(R.id.noval_chapter);
+        novel_chapter=(TextView)findViewById(R.id.novel_chapter);
+        //mProgressBar=(ProgressBar)findViewById(R.id.noval_progressbar);
+        initProgressDialog();
         websites="https://read.qidian.com/chapter/GRXKztRHlME1/pSrkQ4m7qec1";
-        getHtml();
-        get_noval_resource.setOnClickListener(this);
+        get_novel_resource.setOnClickListener(this);
         last_chapter.setOnClickListener(this);
         next_chapter.setOnClickListener(this);
+    }
+
+    private void initProgressDialog() {
+        mProgressDialog=new ProgressDialog(MainActivity.this);
+        mProgressDialog.setTitle("提示");
+        mProgressDialog.setMessage("正在获取小说...");
+        mProgressDialog.setButton("确定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        //dialog.cancel();
+                        mProgressDialog.dismiss();
+                        Log.w(TAG,"onClick!");
+                    }
+                });
+        mProgressDialog.setCancelable(false);
+        mProgressDialog.setIcon(R.mipmap.warming_hint);
     }
 
     private String sendRequest(String murl){
@@ -152,7 +172,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     @Override
                     public void accept(String s) throws Exception {
                         showResponse(s);
-                        noval_chapter.setText("第"+(count+1)+"章");
+                        /*
+                        ProgressBar与ProgressDialog不能同时展示
+                         */
+                        //mProgressBar.setVisibility(View.GONE);
+                        if(mProgressDialog.isShowing()){
+                            mProgressDialog.dismiss();
+                            //mProgressDialog.cancel();
+                        }
+                        novel_chapter.setText("第"+(count+1)+"章");
                         select_chapter.setSelection(count);
                         //设置下拉列表当前选中项，避免出现按钮实现翻页的时候目录文字仍未更改
                     }
@@ -179,18 +207,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             stringBuilder.append(content.text()+'\n'); //text()方法直接提取文本
         }
         resp=stringBuilder.toString();
-        noval_content.setText(resp);
+        novel_content.setText(resp);
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.header_btn1:
-                if(flag==false){
+                if(flag == false){
+                    getHtml();
                     beginGetResource();
+                    //mProgressBar.setVisibility(View.VISIBLE);
+                    mProgressDialog.show();
+                    //Toast.makeText(MainActivity.this,"正在获取小说，请稍等",Toast.LENGTH_SHORT).show();
+                    flag=true;
                 }
-                flag=true;
-                Toast.makeText(MainActivity.this,"正在获取小说，请稍等",Toast.LENGTH_SHORT).show();
                 break;
             case R.id.tail_btn1:
                 if(count>0){
@@ -213,4 +244,5 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             default:break;
         }
     }
+
 }
