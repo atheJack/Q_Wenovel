@@ -14,8 +14,6 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.qs_novel.R;
-
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -34,7 +32,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class NovelActivity extends AppCompatActivity implements View.OnClickListener {
     private Button get_novel_resource;
     private TextView novel_content;
     private Button last_chapter;
@@ -50,12 +48,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Spinner select_chapter;
     private ArrayAdapter<String> adapter;
     private ProgressDialog mProgressDialog;
-    private static final String TAG = "MainActivity";
+    private static final String TAG = "NovelActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.novel_activity);
         catalog=new ArrayList<String>();
         select_chapter=(Spinner)findViewById(R.id.header_btn2);
         get_novel_resource=(Button)findViewById(R.id.header_btn1);
@@ -72,7 +70,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void initProgressDialog() {
-        mProgressDialog=new ProgressDialog(MainActivity.this);
+        mProgressDialog=new ProgressDialog(NovelActivity.this);
         mProgressDialog.setTitle("提示");
         mProgressDialog.setMessage("正在获取小说...");
         mProgressDialog.setButton("确定", new DialogInterface.OnClickListener() {
@@ -219,7 +217,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     beginGetResource();
                     //mProgressBar.setVisibility(View.VISIBLE);
                     mProgressDialog.show();
-                    //Toast.makeText(MainActivity.this,"正在获取小说，请稍等",Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(NovelActivity.this,"正在获取小说，请稍等",Toast.LENGTH_SHORT).show();
                     flag=true;
                 }
                 break;
@@ -229,7 +227,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     websites=chapter_prev_address;
                     beginGetResource();
                 }else{
-                    Toast.makeText(MainActivity.this,"已经是第一章了哦！",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(NovelActivity.this,"已经是第一章了哦！",Toast.LENGTH_SHORT).show();
                 }
                 break;
             case R.id.tail_btn2:
@@ -238,7 +236,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     websites=chapter_next_address;
                     beginGetResource();
                 }else{
-                    Toast.makeText(MainActivity.this,"请先点击左上方按钮以获取小说！",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(NovelActivity.this,"请先点击左上方按钮以获取小说！",Toast.LENGTH_SHORT).show();
                 }
                 break;
             default:break;

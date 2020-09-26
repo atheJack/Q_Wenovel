@@ -4,7 +4,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.qs_novel.MainActivity">
+    tools:context="com.example.qs_novel.NovelActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/lay2_header"
@@ -61,6 +61,7 @@
         app:layout_constraintTop_toBottomOf="@id/lay2_header">
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_margin="16dp"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
             <TextView
